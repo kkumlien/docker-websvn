@@ -1,12 +1,18 @@
-FROM php:5.6-alpine
-MAINTAINER Phil Schatzmann <pschatzmann@gmail.com>
-RUN apk --update add subversion 
+FROM php:8.4-cli-alpine
+ENV WEBSVN_VERSION=2.8.4
+LABEL org.opencontainers.image.authors="6783174+kkumlien@users.noreply.github.com"
+RUN apk --update --no-cache add subversion
 RUN mkdir -p /var/www/html
 WORKDIR /var/www/html
-RUN svn export --username guest --password "" http://websvn.tigris.org/svn/websvn/trunk/ 
-RUN cp -r /var/www/html/trunk/* /var/www/html
-RUN rm -rf /var/www/html/trunk
-COPY config.php /var/www/html/include/
+RUN php -r 'copy("https://github.com/websvnphp/websvn/archive/refs/tags/".getenv("WEBSVN_VERSION").".tar.gz", getenv("WEBSVN_VERSION").".tar.gz");'
+RUN tar -xzf $WEBSVN_VERSION.tar.gz \
+    && mv websvn-$WEBSVN_VERSION websvn \
+    && rm $WEBSVN_VERSION.tar.gz
+WORKDIR /var/www/html/websvn
+COPY config.php ./include
+RUN php -r "readfile('http://getcomposer.org/installer');" | php
+RUN php composer.phar update
+RUN rm composer.phar
+RUN echo 'error_reporting = E_ERROR' > /usr/local/etc/php/php.ini
 EXPOSE 80
-VOLUME /var/www/html/include
-CMD php -S 0.0.0.0:80
+CMD ["php", "-c", "/usr/local/etc/php/php.ini", "-S", "0.0.0.0:80"]
