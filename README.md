@@ -1,8 +1,8 @@
-This is a lean Docker image for WebSVN 2.8.4 (https://websvnphp.github.io/). The Docker image was forked from https://github.com/pschatzmann/docker-websvn and updated from php:5.6-alpine to 8.4-cli-alpine.
+This is a lean Docker image for WebSVN 2.8.4 (https://websvnphp.github.io/). The Docker image was forked from https://github.com/pschatzmann/docker-websvn and updated from `php:5.6-alpine` to `php:8.4-cli-alpine`.
 It uses the embedded PHP web server, which is only recommended for dev environments and *not* for heavy production use (in that case you would want a properly configured HTTP server such as Apache).
 
-At run time you need to provide the SVN repository via the "repository" environment variable that is used in the custom "config.php", which is placed into "/var/www/html/websvn/include/" during Docker build time.
-The SVN repo URL can be in any format supported by Subversion and depending on your config, such as "file://..." for locally mounted repos (would need to be mapped as a volume), "svn://...", etc.
+At run time you can provide the SVN repo via the `repository` environment variable, that is used in the sample *config.php* which is copied into `/var/www/html/websvn/include/` during Docker build time. Check the WebSVN docs for details about the config file and modify it to suit your requirements before building the Docker image.
+The SVN repo URL can be in any format supported by Subversion and depending on your config, such as "file://..." for a locally mounted repo (would need to be mapped as a Docker volume), "svn://...", etc.
 
 Build example: `sudo docker build . -t websvn:2.8.4`
 
